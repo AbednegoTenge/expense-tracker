@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'core',
     'rest_framework',
     'rest_framework.authtoken',
+    'drf_spectacular'
 ]
 
 MIDDLEWARE = [
@@ -79,8 +80,16 @@ REST_FRAMEWORK = {
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.IsAuthenticated',
     ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
+
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'Expense Tracker API',
+    'DESCRIPTION': 'API for tracking income and expenses',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+}
 
 
 # Database
