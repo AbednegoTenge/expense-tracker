@@ -1,4 +1,6 @@
 from django.contrib.auth import authenticate, get_user_model
+from django.db.models import Sum
+from django.utils.timezone import now
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -64,6 +66,33 @@ class AuthViewSet(viewsets.ModelViewSet):
             status=status.HTTP_200_OK
         )
 
+    
+    @action(detail=False, method=['post'], permission_classes=[IsAuthenticated])
+    def logout(self, request):
+        try:
+            request.user.auth_token.delete()
+        except Token.DoesNotExist:
+            pass
+
+        return Response(
+            {'message': 'Logged out successfully'},
+            status=status.HTTP_200_OK
+            )
+
+    
+    @action(detail=False, methods=['get'], permission_classes=[IsAuthenticated])
+    def me(self, request):
+        user = request.user
+        return Response(
+            {
+                "id": user.id,
+                "first_name": user.first_name,
+                "last_name": user.last_name,
+                "email": user.email,
+            }
+        )
+
+
 
 class ExpenseViewSet(viewsets.ModelViewSet):
     """
@@ -79,6 +108,41 @@ class ExpenseViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         # Assign the current user automatically
         serializer.save(user=self.request.user)
+
+    
+    @action(detail=False, methods=['get'])
+    def monthly_summary(self, request):
+        user = request.user
+
+        month = request.query_params.get('month')
+        year = request.query_params.get('year')
+
+        today = now()
+        month = int(month) if month else today.month
+        year = int(year) if year else today.year
+
+        total_expenses = Expense.objects.filter(
+            user=user,
+            date__year=year,
+            date__month=month
+        ).aggregate(total=Sum('amount'))['total'] or 0
+
+        total_income = Income.objects.filter(
+            user=user,
+            date__year=year,
+            date__month=month
+        ).aggregate(total=Sum('amount'))['total'] or 0
+
+        return Response(
+            {
+                "month": month,
+                "year": year,
+                "total_income": total_income,
+                "total_expenses": total_expenses,
+                "balance": total_income - total_expenses,
+            }
+        )
+
 
 
 class IncomeViewSet(viewsets.ModelViewSet):
