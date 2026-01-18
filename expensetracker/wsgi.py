@@ -8,6 +8,16 @@ https://docs.djangoproject.com/en/4.2/howto/deployment/wsgi/
 """
 
 import os
+import sys
+
+path = "/home/abednego-tenge/Desktop/Projects/expensetracker"
+if path not in sys.path:
+    sys.path.append(path)
+
+os.environ.setdefault(
+    "DJANGO_SETTINGS_MODULE",
+    "expensetracker.settings"
+)
 
 from django.core.wsgi import get_wsgi_application
 
