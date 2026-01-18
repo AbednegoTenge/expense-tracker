@@ -17,30 +17,23 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.permissions import AllowAny
-from drf_spectacular.views import (
-    SpectacularAPIView,
-    SpectacularSwaggerView,
-    SpectacularRedocView,
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+
+
+schema_views = get_schema_view(
+    openapi.Info(
+        title="Expense Tracker API",
+        default_version = 'v1',
+        description = "API documentation for Expense Tracker",
+        contact = openapi.Contact(email="abednegotenge180@gmail.com"),
+        licence = openapi.License(name="MIT Licence"),
+    ),
+    public=True
 )
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include('core.urls')),
-
-    # OpenAPI schema (public)
-    path(
-        'api/schema/',
-        SpectacularAPIView.as_view(permission_classes=[AllowAny]),
-        name='schema'
-    ),
-
-    # ✅ Public Swagger UI at /swagger/
-    path(
-        'swagger/',
-        SpectacularSwaggerView.as_view(
-            url_name='schema',
-            permission_classes=[AllowAny],
-        ),
-        name='swagger-ui'
-    ),
+    path('swagger/', schema_views.with_ui('swagger', cache_timeout=0), name='schema_swagger_ui')
 ]
