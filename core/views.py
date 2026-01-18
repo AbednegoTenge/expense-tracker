@@ -67,7 +67,7 @@ class AuthViewSet(viewsets.ModelViewSet):
         )
 
     
-    @action(detail=False, method=['post'], permission_classes=[IsAuthenticated])
+    @action(detail=False, methods=['post'], permission_classes=[IsAuthenticated])
     def logout(self, request):
         try:
             request.user.auth_token.delete()
