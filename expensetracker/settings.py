@@ -30,7 +30,7 @@ SECRET_KEY = os.getenviron('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["yourusername.pythonanywhere.com"]
+ALLOWED_HOSTS = ["junior.pythonanywhere.com"]
 
 
 # Application definition
