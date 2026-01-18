@@ -27,11 +27,9 @@ class AuthViewSet(viewsets.ModelViewSet):
         serializer.is_valid(raise_exception=True)
 
         user = serializer.save()
-        token, _ = Token.objects.get_or_create(user=user)
 
         return Response(
             {
-                "token": token.key,
                 "user_id": user.id,
                 "email": user.email,
             },
